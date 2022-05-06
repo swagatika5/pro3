@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2022.1">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 12.0px 0.0px; font: 14.7px Times; color: #000000; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">import numpy as np<br>
+import matplotlib.pyplot as plt import sys<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">#constants , 1eV = e * (1 J)<br>
+k = 1.381*10**(-23) # J/K<br>
+e = 1.602 * 10**(-19) # coulomb<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def MB(): #Maxwell-Boltzmann statistics<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># create temperature points Tmin = 1<br>
+Tmax = 500<br>
+dT = 0.1<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">T = np.arange(Tmin,Tmax + 1,dT)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">N = np.array([100,200,300]) # number of paticles<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">n = 3 # number of energy levels E0 = 0 # ground state energy<br>
+dE = 0.01 # ev<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Z_list to store value of partition fucntion<br>
+# at differnt temperatures for differnt number of<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># particles<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Z_list = np.zeros((len(N),len(T)))<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># P list stoes the value of boltzmann factors of each<br>
+# state at a given temp as column, next column for next # temp and so on. And then each colum is divided by the # partiton function at that temp to convert those<br>
+# boltzmann factor into probabilities.<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">P_list = np.zeros((len(N),len(T)))<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">for m in range(len(N)): for j in range(len(T)):<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">z = 0 # partition function for each particle for i in range(n):<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># print((e/k)/(T[j]))<br>
+P_list[i,j] = np.e**(-(E0 + i*dE)*(e/k)/(T[j])) z = z + P_list[i,j]<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># the partition function for N partices is just Z_list[m,j] = z**N[m]<br>
+P_list[:,j] = P_list[:,j]/z<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">T1 = T[:-1]<br>
+# note that multiplicatio of 2D array and 1D array<br>
+# first elemt of T is multiplied to first element<br>
+# of all rows (first column that is). That what we need. U = k*T1*T1*np.diff(np.log(Z_list))/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># specific heat capacity T2 = T1[:-1]<br>
+Cv = np.diff(U)/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Helomholtz free energy F = -k*T*np.log(Z_list)<br>
+S = -np.diff(F)/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">#plot<br>
+plt.figure(1)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Average Energy (J)')<br>
+plt.plot( T1, U[0] , label ='N='+str(N[0])) plt.plot( T1, U[1] , label ='N='+str(N[1])) plt.plot( T1, U[2] , label ='N='+str(N[2])) plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(2)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Heat Capactiy (J/K)') plt.plot(T2,Cv[0] , label ='N='+str(N[0])) plt.plot(T2,Cv[1] , label ='N='+str(N[1])) plt.plot(T2,Cv[2] , label ='N='+str(N[2])) plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(3)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel(' Entropy (J/K)') plt.plot(T1,S[0] , label ='N='+str(N[0])) plt.plot(T1,S[1] , label ='N='+str(N[1]))<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.plot(T1,S[2] , label ='N='+str(N[2])) plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(4)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Probability of occupancy (J)') plt.plot(T,P_list[0] , label ='State 0') plt.plot(T,P_list[1] , label ='State 1') plt.plot(T,P_list[2] , label ='State 2')<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.legend() plt.show()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">return None<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def BE(): #Bose Einstein statistics<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># create temperature points Tmin = 1<br>
+Tmax = 500<br>
+dT = 0.1<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">T = np.arange(Tmin,Tmax + 1,dT)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">N = np.array([1,2,3]) # number of paticles<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">n = 3 # number of energy levels dE = 0.01 # ev<br>
+E0 = 0 # ground state energy<br>
+E1 = E0 + dE # first state nergy<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">E2 = E0 + 2*dE # second state nergy<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Z_list to store value of partition fucntion<br>
+# at differnt temperatures for differnt number of # particles<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Z_list = np.zeros((len(N),len(T))) # row,col<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def Z1(t):<br>
+# partition funciton for 1 particle and 3 levels<br>
+# t is temp<br>
+b = (e/k)/t<br>
+return np.e**(-E0*b) + np.e**(-E1*b) + np.e**(-E2*b)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def Z2(t):<br>
+# partitio function for 2 partilces and 3 levels<br>
+# t is temp<br>
+b = (e/k)/t<br>
+return (np.e**(-2*E0*b) + np.e**(-2*E1*b) + np.e**(-2*E2*b)+<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">np.e**(-(E0 + E1)*b) + np.e**(-(E0 + E2)*b) + np.e**(-(E1 + E2)*b) )<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def Z3(t):<br>
+# partitio function for 3 partilces and 3 levels<br>
+# t is temp<br>
+b = (e/k)/t<br>
+return (np.e**(-3*E0*b) + np.e**(-3*E1*b) + np.e**(-3*E2*b) +<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">np.e**(-(2*E0 + E1)*b) + np.e**(-(2*E0 + E2)*b) + np.e**(-(E0 + 2*E1)*b) + np.e**(-(2*E1 + E2)*b) + np.e**(-(E0 + 2*E2)*b) + np.e**(-(E1 + 2*E2)*b) +<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">np.e**(-(E0 + E1 + E2 )*b) )<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">for j in range(len(T)):<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># row0 stores partition function for 1 particle # row1 for 2 paticles and row2 for 3 . Z_list[0,j] = Z1(T[j])<br>
+Z_list[1,j] = Z2(T[j])<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Z_list[2,j] = Z3(T[j])<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># 3n3rgy<br>
+T1 = T[:-1]<br>
+U = k*T1*T1*np.diff(np.log(Z_list))/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># specific heat capacity T2 = T1[:-1]<br>
+Cv = np.diff(U)/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Helomholtz free energy F = -k*T*np.log(Z_list)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">#enrtopy<br>
+S = -np.diff(F)/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">#plot<br>
+plt.figure(1)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Average Energy (J)')<br>
+plt.plot( T1, U[0] , label ='N(particle) =1 ') plt.plot( T1, U[1] , label ='N=2')<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.plot( T1, U[2] , label ='N=3') plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(2)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Heat Capactiy (J/K)') plt.plot(T2,Cv[0] , label ='N(particle) =1') plt.plot(T2,Cv[1] , label ='N=2') plt.plot(T2,Cv[2] , label ='N=3') plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(3)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel(' Entropy (J/K)') plt.plot(T1,S[0] , label ='N(particle) =1') plt.plot(T1,S[1] , label ='N=2') plt.plot(T1,S[2] , label ='N=3') plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(5)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel(' Partiton Function Z') plt.plot(T,Z_list[0], label = 'N(particle) =1') plt.plot(T,Z_list[1], label = 'N =2') plt.plot(T,Z_list[2], label = 'N =3') plt.legend()<br>
+plt.show()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">return None<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def FD(): #Fermi-Dirac statistics<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># create temperature points Tmin = 1<br>
+Tmax = 500<br>
+dT = 0.1<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">T = np.arange(Tmin,Tmax + 1,dT)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">N = np.array([1,2,3]) # number of paticles<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">n = 3 # number of energy levels<br>
+dE = 0.01 # ev<br>
+E0 = 0 # ground state energy<br>
+E1 = E0 + dE # first state nergy<br>
+E2 = E0 + 2*dE # second state nergy<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Z_list to store value of partition fucntion<br>
+# at differnt temperatures for differnt number of # particles<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Z_list = np.zeros((len(N),len(T))) # row,col<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def Z1(t):<br>
+# partition funciton for 1 particle and 3 levels<br>
+# t is temp<br>
+b = (e/k)/t<br>
+return np.e**(-E0*b) + np.e**(-E1*b) + np.e**(-E2*b)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def Z2(t):<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># partitio function for 2 partilces and 3 levels<br>
+# t is temp<br>
+b = (e/k)/t<br>
+return (np.e**(-(E0 + E1)*b) + np.e**(-(E0 + E2)*b) +<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">np.e**(-(E1 + E2)*b) )<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def Z3(t):<br>
+# partitio function for 3 partilces and 3 levels # t is temp<br>
+b = (e/k)/t<br>
+return np.e**(-(E0 + E1 + E2 )*b)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">for j in range(len(T)):<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># row0 stores partition function for 1 particle # row1 for 2 paticles and row2 for 3 . Z_list[0,j] = Z1(T[j])<br>
+Z_list[1,j] = Z2(T[j])<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Z_list[2,j] = Z3(T[j])<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Energy<br>
+T1 = T[:-1]<br>
+U = k*T1*T1*np.diff(np.log(Z_list))/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># specific heat capacity T2 = T1[:-1]<br>
+Cv = np.diff(U)/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Helomholtz free energy F = -k*T*np.log(Z_list)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># enrtopy<br>
+S = -np.diff(F)/dT<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># plot<br>
+plt.figure(1)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Average Energy (J)')<br>
+plt.plot( T1, U[0] , label ='N(particle) =1 ') plt.plot( T1, U[1] , label ='N=2')<br>
+plt.plot( T1, U[2] , label ='N=3') plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(2)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel('Heat Capactiy (J/K)') plt.plot(T2,Cv[0] , label ='N(particle) =1') plt.plot(T2,Cv[1] , label ='N=2') plt.plot(T2,Cv[2] , label ='N=3') plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(3)<br>
+plt.xlabel('T(K)')<br>
+plt.ylabel(' Entropy (J/K)') plt.plot(T1,S[0] , label ='N(particle) =1') plt.plot(T1,S[1] , label ='N=2') plt.plot(T1,S[2] , label ='N=3') plt.legend()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.figure(5)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">plt.xlabel('T(K)')<br>
+plt.ylabel(' Partiton Function Z') plt.plot(T,Z_list[0], label = 'N(particle) =1') plt.plot(T,Z_list[1], label = 'N =2') plt.plot(T,Z_list[2], label = 'N =3') plt.legend()<br>
+plt.show()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">return None<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def default():<br>
+return "Invalid Input"<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">switcher ={ #switch 1: MB,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">2: BE, 3: FD }<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">def switch(w):<br>
+return switcher.get(w,default)()<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">z=2<br>
+while z&gt;1:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">print("For Maxwell-Boltzmann statistics Press ......1") print("For Bose Einstein statistics Press..........2") print("For Fermi-Dirac statistics Press........3") print("To exit Press...........................0")<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">x =int(input("X = ")) if x == 1:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">print(switch(1)) elif x == 2:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">print(switch(2)) elif x == 3:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">print(switch(3)) elif x == 0:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">sys.exit() else:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">print("Invalid Input......Try again")<span class="Apple-converted-space"> </span></span></p>
+</body>
+</html>
